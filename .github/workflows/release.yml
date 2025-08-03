@@ -1,28 +1,28 @@
 ---
 name: Release
 
-'on':
+"on":
   push:
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
     branches:
-      - 'release'
-      - 'beta'
-      - 'build-*'
+      - "release"
+      - "beta"
+      - "build-*"
   schedule:
-    - cron: '05 00 * * *'
+    - cron: "05 00 * * *"
   workflow_dispatch:
 
 concurrency:
   # https://docs.github.com/en/actions/examples/using-concurrency-expressions-and-a-test-matrix
-  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: ${{ github.ref != 'refs/heads/release' }}
 
 permissions: {}
 
 env:
   TS_FEATURES: release-ci
-  BETA_STRING: '(Beta)'
+  BETA_STRING: "(Beta)"
 
 jobs:
   builds:
@@ -37,9 +37,9 @@ jobs:
         include:
           # Too many people with too many variations.
           # We can't handle all the linux versions right now it's spreading efforts too thin.
-          # - platform: 'ubuntu-22.04'
-          #   args: '--bundles deb,appimage'
-          #   extra: '-x64'
+          - platform: "ubuntu-22.04"
+            args: "--bundles appimage"
+            extra: "-x64"
           # - platform: 'ubuntu-24.04-arm'
           #   args: '--bundles deb,appimage'
           #   best_effort: true
@@ -52,10 +52,10 @@ jobs:
           #   args: '--bundles rpm'
           #   extra: '-rpm'
           #   best_effort: true
-          - platform: 'windows-latest'
-            args: '--bundles msi'
-          - platform: 'macos-latest'
-            args: '--target universal-apple-darwin'
+          # - platform: 'windows-latest'
+          #   args: '--bundles msi'
+          # - platform: 'macos-latest'
+          #   args: '--target universal-apple-darwin'
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
       - name: BETA Builds - Set environment variables
         if: ${{ ( github.event_name == 'schedule' ) || ( ! startsWith(github.ref, 'refs/heads/release') ) }}
         env:
-          BETA_STRING: '(Beta)'
+          BETA_STRING: "(Beta)"
           AIRDROP_BASE_URL: ${{ secrets.BETA_AIRDROP_BASE_URL }}
           AIRDROP_API_BASE_URL: ${{ secrets.BETA_AIRDROP_API_BASE_URL }}
           TELEMETRY_API_URL: ${{ secrets.BETA_TELEMETRY_API_URL }}
@@ -160,7 +160,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'npm'
+          cache: "npm"
 
       - name: Rust Setup
         uses: dtolnay/rust-toolchain@stable
@@ -171,7 +171,7 @@ jobs:
         if: ${{ ( ! startsWith(github.ref, 'refs/heads/release') ) && ( ! startsWith(github.ref, 'refs/tags/v') ) }}
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: "./src-tauri -> target"
 
       - name: Install Dependencies - Linux
         if: startsWith(runner.os,'Linux')
@@ -270,11 +270,11 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          NODE_OPTIONS: '--max_old_space_size=4096'
+          NODE_OPTIONS: "--max_old_space_size=4096"
         with:
           tagName: ${{ env.tagName }}
           releaseName: ${{ env.releaseName }}
-          releaseBody: 'Tari Universe - See the assets to download this version and install'
+          releaseBody: "Tari Universe - See the assets to download this version and install"
           releaseDraft: true
           prerelease: true
           includeDebug: false
@@ -441,7 +441,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tari_universe.pdb
-          path: '${{ github.workspace }}/src-tauri/target/release/tari_universe.pdb'
+          path: "${{ github.workspace }}/src-tauri/target/release/tari_universe.pdb"
 
       - name: Windows install Sentry CLI
         if: ${{ ( startsWith(runner.os,'Windows') ) && ( env.SENTRY_AUTH_TOKEN != '' ) }}
