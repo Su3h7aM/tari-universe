@@ -1,4 +1,4 @@
-import { useUIStore } from '@app/store';
+import { useConfigBEInMemoryStore, useUIStore } from '@app/store';
 import { useQuery } from '@tanstack/react-query';
 import { setShowExchangeModal, universalExchangeMinerOption, useExchangeStore } from '@app/store/useExchangeStore.ts';
 import { ExchangeBranding } from '@app/types/exchange.ts';
@@ -33,10 +33,11 @@ export const queryfn = async (exchangeId: string) => {
 export function useFetchExchangeBranding() {
     const theme = useTheme();
     const exchangeId = useExchangeStore((s) => s.currentExchangeMinerId);
+    const baseUrl = useConfigBEInMemoryStore((s) => s.airdrop_api_url);
 
     return useQuery({
         queryKey: [KEY_XC_CONTENT, exchangeId],
-        enabled: !!exchangeId?.length,
+        enabled: !!exchangeId?.length && !!baseUrl.length,
         queryFn: () => queryfn(exchangeId),
         select: (data) => {
             if (data) {
@@ -44,8 +45,8 @@ export function useFetchExchangeBranding() {
                 let logo_img_url = data.logo_img_url;
 
                 if (theme.mode === 'dark') {
-                    logo_img_small_url = data.dark_logo_img_small_url ?? data.logo_img_small_url;
-                    logo_img_url = data.dark_logo_img_url ?? data.logo_img_url;
+                    logo_img_small_url = data.dark_logo_img_small_url || data.logo_img_small_url;
+                    logo_img_url = data.dark_logo_img_url || data.logo_img_url;
                 }
 
                 return { ...data, logo_img_url, logo_img_small_url };

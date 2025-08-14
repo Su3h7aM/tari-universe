@@ -33,7 +33,7 @@ export interface User {
     yat_user_id: string;
     name: string;
     role: string;
-    profileimageurl: string;
+    image_url: string;
     rank: {
         gems: number;
         shells: number;
@@ -91,7 +91,7 @@ export interface CommunityMessage {
     type: MessageType;
 }
 
-export type AirdropConfigBackendInMemory = Omit<ConfigBackendInMemory, 'exchangeId'>;
+export type AirdropConfigBackendInMemory = Omit<ConfigBackendInMemory, 'exchange_id'>;
 
 //////////////////////////////////////////
 export interface AirdropStoreState {
